@@ -17,5 +17,5 @@ class MetaHandler(object):
             handler_.register()
 
     def register(self):
-        logger.error( f"Need to Implement register method in {self.__class__.__name__}")
+        logger.error(f"Need to Implement register method in {self.__class__.__name__}")
         #raise BaseException(f"Need to Implement register method in {self.__class__.__name__}")
