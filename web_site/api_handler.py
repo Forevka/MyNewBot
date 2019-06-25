@@ -6,4 +6,4 @@ class HandlerApi:
         pass
 
     async def handle_bot_uptime(self, request):
-        return web.Response(text="Api handler, here bot instance " + str(BotController.get_current()))
+        return web.Response(text="Bot Lives Time: " + str(BotController.get_current()))

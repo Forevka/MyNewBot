@@ -1,15 +1,16 @@
 API_TOKEN = '697083959:AAEMcQW2EwsXV267zmypRvP6frvREmf9dKo'
 
-WEBHOOK_HOST = 'example.com'  # Domain name or IP addres which your bot is located.
-WEBHOOK_PORT = 443  # Telegram Bot API allows only for usage next ports: 443, 80, 88 or 8443
-WEBHOOK_URL_PATH = '/webhook'  # Part of URL
+SERVER_HOST = 'example.com'  # Domain name or IP addres which your bot is located.
+SERVER_PORT = 443  # Telegram Bot API allows only for usage next ports: 443, 80, 88 or 8443
+
 
 # This options needed if you use self-signed SSL certificate
 # Instructions: https://core.telegram.org/bots/self-signed
 WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
 WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
 
-WEBHOOK_URL = f"https://{WEBHOOK_HOST}:{WEBHOOK_PORT}{WEBHOOK_URL_PATH}"
+BOT_WEBHOOK_PATH = '/webhook'  # Part of URL
+BOT_WEBHOOK_URL = f"https://{SERVER_HOST}:{SERVER_PORT}{BOT_WEBHOOK_PATH}"
 
 # Web app settings:
 #   Use LAN address to listen webhooks

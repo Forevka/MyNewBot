@@ -4,14 +4,26 @@
   <meta charset="utf-8">
   <title>HELLO FROM PYTHON</title>
   <script>
-   function test(){
-    console.log("123");
+   function ShowLog(text){
+		 console.log(text)
    }
+	 function httpPostAsync(theUrl, callback)
+	{
+	    var xmlHttp = new XMLHttpRequest();
+	    xmlHttp.onreadystatechange = function() {
+	        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+	            callback(xmlHttp.responseText);
+	    }
+	    xmlHttp.open("POST", theUrl, true); // true for asynchronous
+	    xmlHttp.send(null);
+	}
   </script>
  </head>
  <body>
  	<form>
-  <p style="text-align: center"><button onclick="test()">{{name}}</button> </p>
+  <p style="text-align: center">
+		<button onclick="httpGetAsync('/bot_time', ShowLog)">{{name}}</button>
+	</p>
 	</form>
  </body>
 </html>

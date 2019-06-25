@@ -19,12 +19,13 @@ from datetime import datetime
 from .handlers import MetaHandler
 
 class BotController(ContextInstanceMixin):
-    def __init__(self, webhook_url, token,
+    def __init__(self, webhook_url, token, full_webhook_path,
                     server = False):
         self.bot = Bot(token=token, parse_mode = "HTML")
         self.dp = Dispatcher(self.bot)
         self.dp.data['start_time'] = datetime.now()
         self.webhook_url = webhook_url
+        self.full_webhook_path = full_webhook_path
         Dispatcher.set_current(self.dp)
         Bot.set_current(self.dp.bot)
         BotController.set_current(self)
