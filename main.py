@@ -3,15 +3,17 @@ from web_site import HandlerSite, HandlerApi
 from aiohttp import web
 import settings
 import logging
+import asyncio
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
 if __name__ == '__main__':
+    loop = asyncio.get_event_loop()
     app = web.Application()
     b = BotController(settings.BOT_WEBHOOK_PATH, settings.API_TOKEN, settings.BOT_WEBHOOK_URL)
     b.load_handlers()
-    b.configure_app(app)
+    loop.run_until_complete(b.configure_app(app))
     handler_site = HandlerSite(app)
     handler_api = HandlerApi()
     app.router.add_route('get',  '/intro',    handler_site.handle_intro)

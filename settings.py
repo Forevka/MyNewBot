@@ -1,6 +1,11 @@
+##############################################
+# FOR START TUNNEL                           #
+# ssh -R forevka:80:localhost:8888 serveo.net#
+##############################################
+
 API_TOKEN = '697083959:AAEMcQW2EwsXV267zmypRvP6frvREmf9dKo'
 
-SERVER_HOST = 'example.com'  # Domain name or IP addres which your bot is located.
+SERVER_HOST = 'forevka.serveo.net'  # Domain name or IP addres which your bot is located.
 SERVER_PORT = 443  # Telegram Bot API allows only for usage next ports: 443, 80, 88 or 8443
 
 
@@ -15,5 +20,5 @@ BOT_WEBHOOK_URL = f"https://{SERVER_HOST}:{SERVER_PORT}{BOT_WEBHOOK_PATH}"
 # Web app settings:
 #   Use LAN address to listen webhooks
 #   User any available port in range from 1024 to 49151 if you're using proxy, or WEBHOOK_PORT if you're using direct webhook handling
-WEBAPP_HOST = '0.0.0.0'
-WEBAPP_PORT = 8888
+WEBAPP_HOST = 'localhost'
+WEBAPP_PORT = 443

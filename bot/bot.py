@@ -39,7 +39,8 @@ class BotController(ContextInstanceMixin):
     def get_dispatcher(self):
         return self.dp
 
-    def configure_app(self, app = None):
+    async def configure_app(self, app = None):
+        await self.bot.set_webhook(self.full_webhook_path)
         if app is not None:
             configure_app(dispatcher = self.dp, app = app, path = self.webhook_url)
         else:
