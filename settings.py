@@ -1,6 +1,6 @@
 ##############################################
 # FOR START TUNNEL                           #
-# ssh -R forevka:80:localhost:8888 serveo.net#
+# ssh -R forevka:443:localhost:443 serveo.net#
 ##############################################
 
 API_TOKEN = '697083959:AAEMcQW2EwsXV267zmypRvP6frvREmf9dKo'
