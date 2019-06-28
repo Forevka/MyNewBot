@@ -21,6 +21,7 @@ from .handlers import MetaHandler
 class BotController(ContextInstanceMixin):
     def __init__(self, webhook_url, token, full_webhook_path,
                     server = False):
+        self.token = token
         self.bot = Bot(token=token, parse_mode = "HTML")
         self.dp = Dispatcher(self.bot)
         self.dp.data['start_time'] = datetime.now()
@@ -38,6 +39,9 @@ class BotController(ContextInstanceMixin):
 
     def get_dispatcher(self):
         return self.dp
+
+    def get_uptime(self):
+        return self.dp.data['start_time']
 
     async def configure_app(self, app = None):
         await self.bot.set_webhook(self.full_webhook_path)

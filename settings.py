@@ -22,3 +22,5 @@ BOT_WEBHOOK_URL = f"https://{SERVER_HOST}:{SERVER_PORT}{BOT_WEBHOOK_PATH}"
 #   User any available port in range from 1024 to 49151 if you're using proxy, or WEBHOOK_PORT if you're using direct webhook handling
 WEBAPP_HOST = 'localhost'
 WEBAPP_PORT = 443
+
+timeformat = "%Y-%m-%d %H:%M:%S"

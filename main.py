@@ -18,7 +18,7 @@ if __name__ == '__main__':
     handler_api = HandlerApi()
     app.router.add_route('get',  '/intro',    handler_site.handle_intro)
     app.router.add_route('get',  '/intro_js',    handler_site.handle_js_intro)
-    app.router.add_route('post', '/bot_time', handler_api.handle_bot_uptime)
+    app.router.add_route('post', '/bot_stats', handler_api.handle_bot_stats)
     for i in app.router.routes():
         print(i)
     web.run_app(app, host=settings.WEBAPP_HOST, port=settings.WEBAPP_PORT)

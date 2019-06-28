@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   <title>HELLO FROM PYTHON</title>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <script>
-   function ShowLog(text){
-		 console.log(text)
-   }
-  </script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
  </head>
  <body>
-	 <div id="app">
-  <p>{{ message }}</p>
-	<button v-on:click="getBotUpTime">Reverse Message</button>
-</div>
+	<div id="app">
+	  <p>Bot started: {{ uptime }}</p>
+		<p>Bot up time: {{ worktime }}</p>
+		<p
+		@mouseover="showToken"
+    @mouseleave="hoverToken"> Bot token: {{ botToken }}</p>
+		<button v-on:click="getBotStats">Get Bot Stats</button>
+	</div>
 
 	<script src="intro_js"></script>
  </body>
