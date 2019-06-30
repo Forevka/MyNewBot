@@ -11,11 +11,12 @@ logging.basicConfig(level=logging.INFO)
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     app = web.Application()
-    b = BotObtainer(settings.BOT_WEBHOOK_PATH, settings.BOT_WEBHOOK_URL)
-    b.add_bot("bot_1", "697083959:AAEMcQW2EwsXV267zmypRvP6frvREmf9dKo")
-    b.add_bot("bot_2", "631844699:AAEVFt1lUrpQGaDiDZ7NpbunNRWezY8nXn0")
-    b.configure_app(app)
-    b.load_handlers()
+
+    bot_pool = BotObtainer(settings.BOT_WEBHOOK_PATH, settings.BOT_WEBHOOK_URL)
+    bot_pool.add_bot("bot_1", "697083959:AAEMcQW2EwsXV267zmypRvP6frvREmf9dKo")
+    bot_pool.add_bot("bot_2", "631844699:AAEVFt1lUrpQGaDiDZ7NpbunNRWezY8nXn0")
+    bot_pool.configure_app(app)
+    bot_pool.load_handlers()
     #for name, cur_dp in b.get_all_bots().items():
     #    loop.run_until_complete(b.set_webhook(name))
     handler_api = HandlerApi()

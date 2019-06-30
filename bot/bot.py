@@ -47,7 +47,6 @@ class MyWebhookRequestHandler(WebhookRequestHandler):
 
 class BotPool:
     bot_alias = {}
-    bot_alias_token = {}
 
     @staticmethod
     def add_bot(name, bot_token, ignore_exist = True):
@@ -58,11 +57,9 @@ class BotPool:
         dp.data['start_time'] = datetime.now()
         if BotPool.bot_alias.get(name) is None:
             BotPool.bot_alias[name] = dp
-            BotPool.bot_alias_token[bot_token] = dp
         else:
             if ignore_exist:
                 BotPool.bot_alias[name] = dp
-                BotPool.bot_alias_token[bot_token] = dp
             else:
                 return None
 
@@ -78,7 +75,11 @@ class BotPool:
 
     @staticmethod
     def get_bot_by_token(token):
-        return BotPool.bot_alias_token.get(token)
+        for dp in BotPool.bot_alias.values():
+            if dp.data['token'] == token:
+                return dp
+
+        return None
 
     @staticmethod
     def configure_app(webhook_path, app = None):
@@ -117,15 +118,12 @@ class BotObtainer(ContextInstanceMixin):
     def get_bot_by_token(self, token):
         return BotPool.get_bot_by_token(token)
 
-    def get_uptime(self):
-        return self.dp.data['start_time']
-
     def configure_app(self, app = None):
         return BotPool.configure_app(self.webhook_url, app = app)
 
     async def set_webhook(self, bot_name):
-        cur_dp = BotPool.get_bot(bot_name)
+        cur_dp = BotPool.get_bot_by_name(bot_name)
         return await cur_dp.bot.set_webhook(self.full_webhook_path + cur_dp.data['name'])
 
     def __str__(self):
-        return "BotController instance "+str(self.dp.data['start_time'])
+        return "BotObtainer instance"
