@@ -1,5 +1,5 @@
-from bot import BotController
-from web_site import HandlerSite, HandlerApi
+from bot import BotObtainer
+from web import HandlerApi
 from aiohttp import web
 import settings
 import logging
@@ -11,15 +11,16 @@ logging.basicConfig(level=logging.INFO)
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     app = web.Application()
-    b = BotController(settings.BOT_WEBHOOK_PATH, settings.API_TOKEN, settings.BOT_WEBHOOK_URL)
+    b = BotObtainer(settings.BOT_WEBHOOK_PATH, settings.BOT_WEBHOOK_URL)
+    b.add_bot("bot_1", "697083959:AAEMcQW2EwsXV267zmypRvP6frvREmf9dKo")
+    b.add_bot("bot_2", "631844699:AAEVFt1lUrpQGaDiDZ7NpbunNRWezY8nXn0")
+    b.configure_app(app)
     b.load_handlers()
-    loop.run_until_complete(b.configure_app(app))
-    handler_site = HandlerSite(app)
+    #for name, cur_dp in b.get_all_bots().items():
+    #    loop.run_until_complete(b.set_webhook(name))
     handler_api = HandlerApi()
-    app.router.add_route('get',  '/intro',    handler_site.handle_intro)
-    app.router.add_route('get',  '/intro_js',    handler_site.handle_js_intro)
-    app.router.add_route('post', '/bot_stats', handler_api.handle_bot_stats)
+    app.router.add_route('post', '/get_all_bots', handler_api.get_bot_all)
+    app.router.add_route('post', '/get_bot', handler_api.get_bot_by_name_token)
     for i in app.router.routes():
         print(i)
     web.run_app(app, host=settings.WEBAPP_HOST, port=settings.WEBAPP_PORT)
-    #executor.start_polling(dp, skip_updates=True)

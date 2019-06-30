@@ -5,6 +5,9 @@ from loguru import logger
 from ..meta import MetaHandler
 
 class MainHandler(MetaHandler):
+    def __init__(self, dp):
+        self.dp = dp
+
     def register(self):
         self.dp.register_message_handler(self.echo)
 

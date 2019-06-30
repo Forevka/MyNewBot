@@ -4,12 +4,15 @@ from aiogram import Bot, Dispatcher, executor, types
 import asyncio
 import ssl
 import sys
+from aiohttp import web
 
 import aiogram
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import Dispatcher
-from aiogram.dispatcher.webhook import get_new_configured_app, configure_app
+from aiogram.dispatcher.webhook import get_new_configured_app, configure_app,\
+                                        WebhookRequestHandler, BOT_DISPATCHER_KEY,\
+                                        DEFAULT_WEB_PATH, DEFAULT_ROUTE_NAME
 from aiogram.types import ChatType, ParseMode, ContentTypes
 from aiogram.utils.markdown import hbold, bold, text, link
 from aiogram.utils.mixins import ContextInstanceMixin
@@ -18,37 +21,111 @@ from datetime import datetime
 
 from .handlers import MetaHandler
 
-class BotController(ContextInstanceMixin):
-    def __init__(self, webhook_url, token, full_webhook_path,
+def my_configure_app(dispatcher, app: web.Application, path=DEFAULT_WEB_PATH, route_name=DEFAULT_ROUTE_NAME):
+    """
+    You can prepare web.Application for working with webhook handler.
+    :param dispatcher: Dispatcher instance
+    :param app: :class:`aiohttp.web.Application`
+    :param path: Path to your webhook.
+    :param route_name: Name of webhook handler route
+    :return:
+    """
+
+    app.router.add_route('*', path, MyWebhookRequestHandler, name=route_name)
+    app[path] = dispatcher
+
+class MyWebhookRequestHandler(WebhookRequestHandler):
+    def get_dispatcher(self):
+        dp = self.request.app[self.request.path]
+        try:
+            from aiogram import Bot, Dispatcher
+            Dispatcher.set_current(dp)
+            Bot.set_current(dp.bot)
+        except RuntimeError:
+            pass
+        return dp
+
+class BotPool:
+    bot_alias = {}
+    bot_alias_token = {}
+
+    @staticmethod
+    def add_bot(name, bot_token, ignore_exist = True):
+        bot = Bot(token=bot_token, parse_mode = "HTML")
+        dp = Dispatcher(bot)
+        dp.data['token'] = bot_token
+        dp.data['name'] = name
+        dp.data['start_time'] = datetime.now()
+        if BotPool.bot_alias.get(name) is None:
+            BotPool.bot_alias[name] = dp
+            BotPool.bot_alias_token[bot_token] = dp
+        else:
+            if ignore_exist:
+                BotPool.bot_alias[name] = dp
+                BotPool.bot_alias_token[bot_token] = dp
+            else:
+                return None
+
+        return dp
+
+    @staticmethod
+    def get_all_bots():
+        return BotPool.bot_alias
+
+    @staticmethod
+    def get_bot_by_name(name):
+        return BotPool.bot_alias.get(name)
+
+    @staticmethod
+    def get_bot_by_token(token):
+        return BotPool.bot_alias_token.get(token)
+
+    @staticmethod
+    def configure_app(webhook_path, app = None):
+        if app is None:
+            app = web.Application()
+
+        for name, cur_dp in BotPool.bot_alias.items():
+            this_bot = cur_dp.bot
+            my_configure_app(dispatcher = cur_dp, app = app,
+                            path = webhook_path+name,
+                            route_name = "webhook_"+name, )
+
+        return app
+
+class BotObtainer(ContextInstanceMixin):
+    def __init__(self, webhook_url, full_webhook_path,
                     server = False):
-        self.token = token
-        self.bot = Bot(token=token, parse_mode = "HTML")
-        self.dp = Dispatcher(self.bot)
-        self.dp.data['start_time'] = datetime.now()
         self.webhook_url = webhook_url
         self.full_webhook_path = full_webhook_path
-        Dispatcher.set_current(self.dp)
-        Bot.set_current(self.dp.bot)
-        BotController.set_current(self)
+
+        BotObtainer.set_current(self)
+
+    def add_bot(self, name, token, ignore_exist = True):
+        return BotPool.add_bot(name, token, ignore_exist = True)
 
     def load_handlers(self):
-        MetaHandler.register_all()
+        for name, cur_dp in self.get_all_bots().items():
+            MetaHandler.register_all(cur_dp)
 
-    def get_bot(self):
-        return self.bot
+    def get_all_bots(self):
+        return BotPool.get_all_bots()
 
-    def get_dispatcher(self):
-        return self.dp
+    def get_bot_by_name(self, name):
+        return BotPool.get_bot_by_name(name)
+
+    def get_bot_by_token(self, token):
+        return BotPool.get_bot_by_token(token)
 
     def get_uptime(self):
         return self.dp.data['start_time']
 
-    async def configure_app(self, app = None):
-        await self.bot.set_webhook(self.full_webhook_path)
-        if app is not None:
-            configure_app(dispatcher = self.dp, app = app, path = self.webhook_url)
-        else:
-            return get_new_configured_app(dispatcher=self.dp, path = self.webhook_url)
+    def configure_app(self, app = None):
+        return BotPool.configure_app(self.webhook_url, app = app)
+
+    async def set_webhook(self, bot_name):
+        cur_dp = BotPool.get_bot(bot_name)
+        return await cur_dp.bot.set_webhook(self.full_webhook_path + cur_dp.data['name'])
 
     def __str__(self):
         return "BotController instance "+str(self.dp.data['start_time'])
