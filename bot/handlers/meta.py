@@ -26,7 +26,7 @@ class LoginHandler:
 
     def register(self, dp):
         self.dp = dp
-        self.dp.register_message_handler(self.login_user, commands = 'start')
+        #self.dp.register_message_handler(self.login_user, commands = 'start')
         #self.dp.register_message_handler(self.get_login_button, commands = 'login')
 
     async def get_login_button(self, message: types.Message):

@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">
+  <div class="login">
     <h1>{{ msg }}</h1>
     <h2>{{ desccription }}</h2>
     <fish-form inline>
@@ -23,7 +23,7 @@ export default {
   data () {
     return {
       msg: 'Login Page',
-      desccription: 'It will open dialog with bot in telegram app',
+      desccription: 'It will open dialog to login :D',
       approve_code: ''
     }
   },
@@ -35,15 +35,16 @@ export default {
       AxiosInstance.post('/login_user')
         .then(response => window.open(response.data.url, '_blank'))
     },
-    approve_user: function (code) {
-      AxiosInstance.post('/approve_user')
+    approve_user: function (user) {
+      AxiosInstance.post('/approve_user', user)
         .then(response => console.log(response))
     },
     is_login: function () {
-      console.log(this.$route.query)
+      console.log(" ")
     },
     user_loged: function (user) {
       console.log(user)
+      this.approve_user(user)
     }
   }
 }
@@ -54,15 +55,10 @@ export default {
 h1, h2 {
   font-weight: normal;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
 a {
   color: #42b983;
+}
+.login {
+margin: auto;
 }
 </style>

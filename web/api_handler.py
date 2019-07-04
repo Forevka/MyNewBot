@@ -6,10 +6,28 @@ from loguru import logger
 
 import string
 import random
-def randomString(stringLength):
-    """Generate a random string with the combination of lowercase and uppercase letters """
-    letters = string.ascii_letters
-    return ''.join(random.choice(letters) for i in range(stringLength))
+
+import collections
+import hmac
+import hashlib
+import json
+import jwt
+
+def encode_token(data, token):
+    return jwt.encode(data, token, algorithm='HS256')
+
+def decode_token(jwt, token):
+    return jwt.decode(jwt, token, algorithms=['HS256'])
+
+
+def check_string(data, token):
+    secret = hashlib.sha256()
+    secret.update(token.encode('utf-8'))
+    sorted_params = collections.OrderedDict(sorted(data.items()))
+    param_hash = data.get('hash', '')
+    msg = "\n".join(["{}={}".format(k, v) for k, v in sorted_params.items() if k != 'hash'])
+
+    return param_hash == hmac.new(secret.digest(), msg.encode('utf-8'), digestmod=hashlib.sha256).hexdigest()
 
 class HandlerApi:
     def __init__(self):
@@ -28,12 +46,16 @@ class HandlerApi:
         logger.debug(request)
         data = await request.json()
         logger.debug(data)
-        if b.data['approve_code'] == data['approve_code']:
-            return web.json_response({"status": "ok","token": f"here-will-be-token"},
-                                    headers = {"Access-Control-Allow-Origin": "*"})
+        headers = {"Access-Control-Allow-Origin": "*",
+                    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'}
+        is_from_tg = check_string(data, b['token'])
+        logger.debug(is_from_tg)
+        if is_from_tg:
+            return web.json_response({"status": "ok","token": encode_token(data, b['token']).decode("utf-8") },
+                                    headers = headers)
         else:
             return web.json_response({"status": "bad"},
-                                    headers = {"Access-Control-Allow-Origin": "*"})
+                                    headers = headers)
 
     async def get_bot_all(self, request):
         b = BotObtainer.get_current().get_all_bots()
