@@ -27,22 +27,11 @@ class LoginHandler:
     def register(self, dp):
         self.dp = dp
         self.dp.register_message_handler(self.login_user, commands = 'start')
-        self.dp.register_message_handler(self.get_login_button, commands = 'login')
-
-    async def login_user(self, message: types.Message):
-        need_code = self.dp.data.get('login_code')
-        if need_code:
-            user_code = message.get_args()
-            logger.debug(f"user code {user_code} need_code {need_code}")
-            if user_code == need_code:
-                self.dp.data['approve_code'] = 'approve'
-                await message.answer(f'Код подтверждение для сайта {self.dp.data["approve_code"]}')
-            else:
-                await message.answer("вздумал обмануть?")
+        #self.dp.register_message_handler(self.get_login_button, commands = 'login')
 
     async def get_login_button(self, message: types.Message):
         markup = types.InlineKeyboardMarkup()
-        a = types.LoginUrl("forevka.serveo.net/%23/login")
+        a = types.LoginUrl("forevka.serveo.net%2F%23%2Flogin")
         b = types.InlineKeyboardButton('Login to site', login_url = a)
         logger.debug(a)
         logger.debug(b)

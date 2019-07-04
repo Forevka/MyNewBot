@@ -95,13 +95,6 @@ class BotPool:
                             route_name = "webhook_"+name, )
 
         return app
-'''
-class WaitingLogin:
-    def __init__(self, bot_name, code):
-        self.bot_name = bot_name
-        self.code = code
-'''
-
 
 
 class BotObtainer(ContextInstanceMixin):

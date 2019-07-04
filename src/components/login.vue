@@ -4,7 +4,10 @@
     <h2>{{ desccription }}</h2>
     <fish-form inline>
       <fish-field>
-        <fish-button type="positive" size="big" v-on:click="login_user">Login</fish-button>
+        <vue-telegram-login
+        mode="callback"
+        telegram-login="winprizebot"
+        @callback="user_loged" />
       </fish-field>
     </fish-form>
   </div>
@@ -12,8 +15,11 @@
 
 <script>
 import AxiosInstance from '../api-comunicate'
+import {vueTelegramLogin} from 'vue-telegram-login'
+
 export default {
   name: 'login',
+  components: {vueTelegramLogin},
   data () {
     return {
       msg: 'Login Page',
@@ -35,6 +41,9 @@ export default {
     },
     is_login: function () {
       console.log(this.$route.query)
+    },
+    user_loged: function (user) {
+      console.log(user)
     }
   }
 }

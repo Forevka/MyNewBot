@@ -35,16 +35,6 @@ class HandlerApi:
             return web.json_response({"status": "bad"},
                                     headers = {"Access-Control-Allow-Origin": "*"})
 
-
-    async def login_user(self, request):
-        b = BotObtainer.get_current().get_bot_for_login()
-        b['login_code'] = randomString(8)
-        b['login_time'] = datetime.now()
-        bot_username = await b.bot.get_me()
-        response = {"url": f"http://t.me/{bot_username.username}?start={b['login_code']}"}
-        return web.json_response(response,
-                                headers = {"Access-Control-Allow-Origin": "*"})
-
     async def get_bot_all(self, request):
         b = BotObtainer.get_current().get_all_bots()
         response = []
