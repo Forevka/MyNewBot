@@ -17,9 +17,11 @@ from aiogram.types import ChatType, ParseMode, ContentTypes
 from aiogram.utils.markdown import hbold, bold, text, link
 from aiogram.utils.mixins import ContextInstanceMixin
 
+from loguru import logger
+
 from datetime import datetime
 
-from .handlers import MetaHandler
+from .handlers import MetaHandler, LoginHandler
 
 def my_configure_app(dispatcher, app: web.Application, path=DEFAULT_WEB_PATH, route_name=DEFAULT_ROUTE_NAME):
     """
@@ -93,14 +95,35 @@ class BotPool:
                             route_name = "webhook_"+name, )
 
         return app
+'''
+class WaitingLogin:
+    def __init__(self, bot_name, code):
+        self.bot_name = bot_name
+        self.code = code
+'''
+
+
 
 class BotObtainer(ContextInstanceMixin):
     def __init__(self, webhook_url, full_webhook_path,
                     server = False):
+        self.login_user = []
+        self.bot_for_login = None
         self.webhook_url = webhook_url
         self.full_webhook_path = full_webhook_path
 
         BotObtainer.set_current(self)
+
+    def set_bot_for_login(self, bot_name):
+        self.bot_for_login = self.get_bot_by_name(bot_name)
+        self.bot_for_login.data['approve_code'] = ''
+        login_handler = LoginHandler()
+        login_handler.register(self.bot_for_login)
+        logger.debug("setted bot for login to " + str(self.bot_for_login))
+        return self.bot_for_login is not None
+
+    def get_bot_for_login(self):
+        return self.bot_for_login
 
     def add_bot(self, name, token, ignore_exist = True):
         return BotPool.add_bot(name, token, ignore_exist = True)
