@@ -2,7 +2,7 @@
 # FOR START TUNNEL                           #
 # ssh -R forevka:443:localhost:443 serveo.net#
 # WITH NPM                                   #
-# lt --port 8000                             #
+# lt --port 443                             #
 # before: npm install -g localtunnel         #
 ##############################################
 

@@ -16,10 +16,6 @@ import jwt
 def encode_token(data, token):
     return jwt.encode(data, token, algorithm='HS256')
 
-def decode_token(jwt, token):
-    return jwt.decode(jwt, token, algorithms=['HS256'])
-
-
 def check_string(data, token):
     secret = hashlib.sha256()
     secret.update(token.encode('utf-8'))
@@ -44,6 +40,7 @@ class HandlerApi:
     async def approve_user(self, request):
         b = BotObtainer.get_current().get_bot_for_login()
         logger.debug(request)
+        logger.debug(request.headers)
         data = await request.json()
         logger.debug(data)
         headers = {"Access-Control-Allow-Origin": "*",
@@ -56,6 +53,9 @@ class HandlerApi:
         else:
             return web.json_response({"status": "bad"},
                                     headers = headers)
+
+    async def ping(self, request):
+        return web.json_response({"status": "ok"})
 
     async def get_bot_all(self, request):
         b = BotObtainer.get_current().get_all_bots()

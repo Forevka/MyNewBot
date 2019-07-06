@@ -27,24 +27,37 @@ export default {
       approve_code: ''
     }
   },
-  beforeMount () {
-    this.is_login()
-  },
   methods: {
     login_user: function () {
       AxiosInstance.post('/login_user')
         .then(response => window.open(response.data.url, '_blank'))
     },
     approve_user: function (user) {
-      AxiosInstance.post('/approve_user', user)
-        .then(response => console.log(response))
-    },
-    is_login: function () {
-      console.log(" ")
+      var headers = {
+        'Content-Type': 'application/json',
+        'auth-token': typeof localStorage.token === 'undefined' ? '' : localStorage.token
+      }
+      AxiosInstance.post('/approve_user', user, {headers: headers})
+        .then(response => {
+          if (response.data.status === 'ok') {
+            localStorage.token = response.data.token
+            this.$router.push('admin')
+          } else {
+            this.show_notify()
+          }
+        })
     },
     user_loged: function (user) {
       console.log(user)
       this.approve_user(user)
+    },
+    show_notify: function () {
+      this.$notify({
+        type: 'warn',
+        group: 'foo',
+        title: 'Can`t login',
+        text: 'Something went wrong, you cant login. Try again or wait'
+      })
     }
   }
 }

@@ -14,10 +14,21 @@ async def check_auth(request, handler):
     return web.json_response({'error': "unautheticated user"})
 
 
-async def hello(request):
-    return web.json_response({"payload":"ok"})
+async def with_token(request):
+    return web.json_response({"payload":"with_token"})
 
-app = web.Application(middlewares=[check_auth])
-app.add_routes([web.post('/test_token', hello)])
+async def without_token(request):
+    return web.json_response({"payload":"without_token"})
 
-web.run_app(app)
+root_app = web.Application()
+
+
+admin_app = web.Application(middlewares=[check_auth])
+admin_app.add_routes([web.post('/test_token', with_token)])
+
+root_app.add_routes([web.post('/test', without_token)])
+
+root_app.add_subapp('/admin/', admin_app)
+for i in root_app.router.routes():
+    print(i)
+web.run_app(root_app, port = 7890)
